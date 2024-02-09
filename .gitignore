@@ -1,0 +1,7 @@
+Maps/
+Pipfile.lock
+sql.db
+
+# Files not ready yet
+census_upload.py
+usac_search.py
