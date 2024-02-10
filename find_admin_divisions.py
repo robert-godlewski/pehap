@@ -1,6 +1,7 @@
 # Grabs all of the administrative divisions within a country and saves the links
-from urllib.request import urlopen
+# from urllib.request import urlopen
 from bs4 import BeautifulSoup
+from enviornment_variables import wiki
 
 import ssl
 
@@ -10,10 +11,9 @@ ctx = ssl.create_default_context()
 ctx.check_hostname = False
 ctx.verify_mode = ssl.CERT_NONE
 
-wiki = 'https://en.wikipedia.org'
-
 
 def findDivisions(soup: BeautifulSoup) -> list:
+    # Scans the page for a list of locations and returns the array
     # print(soup.title)
     tables = soup.find_all('table', 'wikitable')
     regions = []

@@ -1,4 +1,5 @@
 # About
+This project is a Political Election History Analysis Project which analyzes the election history of political parties throughout time.
 
 # References
 * https://beautiful-soup-4.readthedocs.io/en/latest/
