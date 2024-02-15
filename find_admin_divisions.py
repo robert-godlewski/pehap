@@ -43,7 +43,7 @@ def findDivisions(soup: BeautifulSoup) -> list:
                 # print('Skipping Row Header')
                 pass
             if region_name and region_link:
-                regions.append({'name': region_name, 'link': region_link})
+                regions.append({'name': region_name, 'links': region_link})
             # print('++++++++++++++')
         # print('#########')
     return regions

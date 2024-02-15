@@ -45,12 +45,15 @@ territory_history_url = wiki + 'wiki/' + usa_territory_history
 # print(f'Territorial History of the USA Link = {territory_history_url}')
 
 # Adding in USA to countries table if needed
-have_usa = False
-usa = None
-# usa_raw = None
 usa_name = 'United States of America'
-
+usa_temp = Country({
+    'name': usa_name,
+    'links': [url, admin_url, territory_history_url]
+})
+usa = None
 # This while loop works
+# have_usa = False
+# usa_raw = None
 # while not have_usa:
 #     cur.execute("SELECT * FROM countries WHERE name = ? ", (memoryview(usa_name.encode()),))
 #     usa_raw = cur.fetchone()
@@ -65,26 +68,18 @@ usa_name = 'United States of America'
 #         print('Added the USA to the database')
 
 # This stuff doesn't work yet
-usa_list = Country.get_countries_by_name({'name': usa_name})
-if len(usa_list) >= 1:
-    if usa_list == 1:
-        raw = usa_list[0]
-        data = Country.convertRawData(raw)
-        usa = Country(data)
-    else:
-        i = 0
-        while i < len(usa_list):
-            raw = usa_list[i]
-            data = Country.convertRawData(raw)
-            info = Country(data)
-            if info.currently_around():
-                usa = info
-                i = len(usa_list)
-            i += 1
-else:
-    links = f'{url} | {admin_url} | {territory_history_url}'
+usa_list = usa_temp.get_countries_by_name(usa_temp.name)
+print(usa_list)
+if len(usa_list) == 0:
+    links = ''
+    i = 0
+    while i < len(usa_temp.links):
+        links += usa_temp.links[i]
+        if i != len(usa_temp.links)-1:
+            links += ' | '
+        i += 1
     data = {
-        'name': memoryview(usa_name.encode()),
+        'name': memoryview(usa_temp.name.encode()),
         'links': memoryview(links.encode()),
         'year_established': 1776,
         'month_established': memoryview('July'.encode()),
@@ -94,7 +89,20 @@ else:
         'day_disestablished': None,
         'old_country_id': None
     }
-    usa = Country.create_country(data)
+    usa = usa_temp.create_country(data)
+if len(usa_list) == 1:
+    data = usa_temp.convertRawData(usa_list[0])
+    usa = Country(data)
+elif len(usa_list) > 1:
+    i = 0
+    while i < len(usa_list):
+        raw = usa_list[i]
+        data = usa_temp.convertRawData(usa_list[i])
+        info = Country(data)
+        if info.currently_around():
+            usa = info
+            i = len(usa_list)
+        i += 1
 
 # Adding in the USA admin divisions
 # usa_data = {
@@ -115,6 +123,7 @@ admin_soup = BeautifulSoup(admin_html, parser)
 regions = findDivisions(admin_soup)
 # print(f'Regions List = {regions}')
 for region in regions:
+    print(f'region = {type(region)} {region}')
     cur.execute("SELECT * FROM admin_divisions WHERE name = ? ", (memoryview(region['name'].encode()),))
     region_raw = cur.fetchone()
     if region_raw:

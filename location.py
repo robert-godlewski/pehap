@@ -13,9 +13,11 @@ cur = con.cursor()
 # This is a model format for regions
 class Location:
     def __init__(self, data: dict) -> None:
-        self.id = data['id']
+        if 'id' in data: self.id = data['id']
+        else: self.id = None
         self.name = data['name']
-        self.links = data['links']
+        if 'links' in data: self.links = data['links']
+        else: self.links = None
         ye = 'year_established'
         if ye in data: self.year_established = data[ye]
         else: self.year_established = None
@@ -35,15 +37,12 @@ class Location:
         if dd in data: self.day_disestablished = data[dd]
         else: self.day_disestablished = None
 
-    def __str__(self) -> str:
-        return self.name
+    def __str__(self) -> str: return self.name
 
     def currently_around(self) -> bool:
         # determined if the country is still around or not
-        if self.year_disestablished:
-            return False
-        else:
-            return True
+        if self.year_disestablished: return False
+        else: return True
 
 
 class Country(Location):
@@ -54,10 +53,11 @@ class Country(Location):
 
     @classmethod
     def create_country(cls, data: dict):
-        cur.execute('''INSERT INTO countries (name, links, year_established, month_established, day_established, year_disestablished, month_disestablished, day_disestablished, old_country_id) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? )''', data, )
+        print(f'data in = {type(data)} {data}')
+        cur.execute('''INSERT INTO countries (name, links, year_established, month_established, day_established, year_disestablished, month_disestablished, day_disestablished, old_country_id) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? )''', (data['name'],data['links'],data['year_established'],data['month_established'],data['day_established'],data['year_disestablished'],data['month_disestablished'],data['day_disestablished'],data['old_country_id'], ), )
         con.commit()
         print(f'Added {data["name"]} to the database')
-        countries = cls.get_countries_by_name(data)
+        countries = cls.get_countries_by_name(data['name'])
         if len(countries) < 1: 
             print('Something went wrong here')
             return False
@@ -74,6 +74,9 @@ class Country(Location):
     @staticmethod
     def convertRawData(data: tuple) -> dict:
         decodeType = 'utf-8'
+        md = None
+        if data[7]:
+            md = str(data[7],decodeType)
         return {
             'id': data[0],
             'name': str(data[1],decodeType),
@@ -82,14 +85,14 @@ class Country(Location):
             'month_established': str(data[4],decodeType),
             'day_established': data[5],
             'year_disestablished': data[6],
-            'month_disestablished': str(data[7],decodeType),
+            'month_disestablished': md,
             'day_disestablished': data[8],
             'old_country_id': data[9]
         }
 
     @staticmethod
-    def get_countries_by_name(data: dict) -> list:
-        cur.execute("SELECT * FROM countries WHERE name = ? ", data["name"], )
+    def get_countries_by_name(data: str) -> list:
+        cur.execute("SELECT * FROM countries WHERE name = ? ", (memoryview(data.encode()),), )
         return cur.fetchall()
 
 
@@ -99,15 +102,11 @@ class AdminDivision(Location):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         self.country_id = data['country_id']
-        self.title = None
-        if 'title' in data: 
-            if type(data['title']) == str: self.title = data['title']
-            else: self.title = str(data['title'],'utf-8')
+        if 'title' in data: self.title = data['title']
+        else: self.title = None
         if 'old_admin_id' in data: self.old_admin_id = data['old_admin_id']
         else: self.old_admin_id = None
 
     def __str__(self) -> str:
-        if self.title:
-            return f'The {self.title} of {self.name}'
-        else:
-            return super().__str__()
+        if self.title: return f'The {self.title} of {self.name}'
+        else: return super().__str__()
