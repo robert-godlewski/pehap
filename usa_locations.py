@@ -51,23 +51,6 @@ usa_temp = Country({
     'links': [url, admin_url, territory_history_url]
 })
 usa = None
-# This while loop works
-# have_usa = False
-# usa_raw = None
-# while not have_usa:
-#     cur.execute("SELECT * FROM countries WHERE name = ? ", (memoryview(usa_name.encode()),))
-#     usa_raw = cur.fetchone()
-#     if usa_raw:
-#         # print(usa_raw)
-#         print('Already have this in the Database')
-#         have_usa = True
-#     else:
-#         # print('Need to add it in')
-#         cur.execute('''INSERT INTO countries (name, links, year_established, month_established, day_established) VALUES ( ?, ?, ?, ?, ? )''', (memoryview(usa_name.encode()), memoryview(f'{url} | {admin_url} | {territory_history_url}'.encode()), 1776, memoryview('July'.encode()), 4), )
-#         con.commit()
-#         print('Added the USA to the database')
-
-# This stuff doesn't work yet
 usa_list = usa_temp.get_countries_by_name(usa_temp.name)
 print(usa_list)
 if len(usa_list) == 0:
@@ -90,7 +73,7 @@ if len(usa_list) == 0:
         'old_country_id': None
     }
     usa = usa_temp.create_country(data)
-if len(usa_list) == 1:
+elif len(usa_list) == 1:
     data = usa_temp.convertRawData(usa_list[0])
     usa = Country(data)
 elif len(usa_list) > 1:
@@ -103,23 +86,10 @@ elif len(usa_list) > 1:
             usa = info
             i = len(usa_list)
         i += 1
-
-# Adding in the USA admin divisions
-# usa_data = {
-#     "id": usa_raw[0],
-#     "name": str(usa_raw[1],'utf-8'),
-#     "links": str(usa_raw[2],'utf-8').split(" | "),
-#     "year_established": usa_raw[3],
-#     "month_established": str(usa_raw[4],'utf-8'),
-#     "day_established": usa_raw[5]
-# }
-# usa = Country(usa_data)
-# usa = Country(usa_raw)
 print(f"USA: {usa}")
 
 admin_html = urlopen(url=admin_url, context=ctx).read()
 admin_soup = BeautifulSoup(admin_html, parser)
-# fix this function to also save in the DB
 regions = findDivisions(admin_soup)
 # print(f'Regions List = {regions}')
 for region in regions:
