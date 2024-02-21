@@ -1,4 +1,4 @@
-wiki = 'https://en.wikipedia.org/'
+wiki = 'https://en.wikipedia.org'
 db_name = 'sql.db'
 
 # Scripts

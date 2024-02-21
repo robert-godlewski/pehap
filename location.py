@@ -52,37 +52,59 @@ class Country(Location):
         else: self.old_country_id = None
 
     @classmethod
-    def create_country(cls, data: dict):
+    def create_country(cls, data: dict) -> None:
         # print(f'data in = {type(data)} {data}')
-        cur.execute('''INSERT INTO countries (name, links, year_established, month_established, day_established, year_disestablished, month_disestablished, day_disestablished, old_country_id) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? )''', (data['name'],data['links'],data['year_established'],data['month_established'],data['day_established'],data['year_disestablished'],data['month_disestablished'],data['day_disestablished'],data['old_country_id'], ), )
+        name = None
+        if 'name' in data: name = memoryview(data['name'].encode())
+        links = None
+        if 'links' in data:
+            links_raw = ''
+            for i in range(len(data['links'])):
+                links_raw += data['links'][i]
+                if i != len(data['links'])-1:
+                    links_raw += ' | '
+            links = memoryview(links_raw.encode())
+        ye = None
+        if 'year_established' in data: ye = data['year_established']
+        me = None
+        if 'month_established' in data: me = memoryview(data['month_established'].encode())
+        de = None
+        if 'day_established' in data: de = data['day_established']
+        yd = None
+        if 'year_disestablished' in data: yd = data['year_disestablished']
+        md = None
+        if 'month_disestablished' in data:
+            md = memoryview(data['month_disestablished'].encode())
+        dd = None
+        if 'day_disestablished' in data: dd = data['day_disestablished']
+        ocid = None
+        if 'old_country_id' in data: ocid = data['old_country_id']
+        cur.execute('''INSERT INTO countries (name, links, year_established, month_established, day_established, year_disestablished, month_disestablished, day_disestablished, old_country_id) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? )''', (name,links,ye,me,de,yd,md,dd,ocid,),)
         con.commit()
         # print(f'Added {data["name"]} to the database')
-        countries = cls.get_countries_by_name(data['name'])
-        if len(countries) < 1: 
-            # print('Something went wrong here')
-            return False
-        else:
-            # Its going to be the last country because we just created it
-            return cls(countries[len(countries)-1])
 
     @classmethod
     def get_country_by_id(cls, data: dict):
         cur.execute("SELECT * FROM countries WHERE id = ? ", data["id"], )
         country_raw = cur.fetchone()
+        # print(f'Got = {country_raw}')
         return cls(country_raw)
 
     @staticmethod
     def convertRawData(data: tuple) -> dict:
+        # Converts data from db to a readable hash map
+        # print(f'data converting: {data}')
         decodeType = 'utf-8'
+        me = None
+        if data[4]: me = str(data[4],decodeType)
         md = None
-        if data[7]:
-            md = str(data[7],decodeType)
+        if data[7]: md = str(data[7],decodeType)
         return {
             'id': data[0],
             'name': str(data[1],decodeType),
             'links': str(data[2],decodeType).split(" | "),
             'year_established': data[3],
-            'month_established': str(data[4],decodeType),
+            'month_established': me,
             'day_established': data[5],
             'year_disestablished': data[6],
             'month_disestablished': md,
@@ -91,8 +113,8 @@ class Country(Location):
         }
 
     @staticmethod
-    def get_countries_by_name(data: str) -> list:
-        cur.execute("SELECT * FROM countries WHERE name = ? ", (memoryview(data.encode()),), )
+    def get_countries_by_name(data: dict) -> list:
+        cur.execute("SELECT * FROM countries WHERE name = ? ", (memoryview(data['name'].encode()),),)
         return cur.fetchall()
 
 
@@ -111,47 +133,76 @@ class AdminDivision(Location):
         if self.title: return f'The {self.title} of {self.name}'
         else: return super().__str__()
 
-    # Fix commented methods below to match with AdminDivision
-    # @classmethod
-    # def create_country(cls, data: dict):
-    #     print(f'data in = {type(data)} {data}')
-    #     cur.execute('''INSERT INTO countries (name, links, year_established, month_established, day_established, year_disestablished, month_disestablished, day_disestablished, old_country_id) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? )''', (data['name'],data['links'],data['year_established'],data['month_established'],data['day_established'],data['year_disestablished'],data['month_disestablished'],data['day_disestablished'],data['old_country_id'], ), )
-    #     con.commit()
-    #     print(f'Added {data["name"]} to the database')
-    #     countries = cls.get_countries_by_name(data['name'])
-    #     if len(countries) < 1: 
-    #         print('Something went wrong here')
-    #         return False
-    #     else:
-    #         # Its going to be the last country because we just created it
-    #         return cls(countries[len(countries)-1])
+    @classmethod
+    def create_admin_div(cls, data: dict) -> None:
+        # print(f'data in = {type(data)} {data}')
+        name = None
+        if 'name' in data: name = memoryview(data['name'].encode())
+        links = None
+        if 'links' in data:
+            links_raw = ''
+            for i in range(len(data['links'])):
+                links_raw += data['links'][i]
+                if i != len(data['links'])-1:
+                    links_raw += ' | '
+            links = memoryview(links_raw.encode())
+        ye = None
+        if 'year_established' in data: ye = data['year_established']
+        me = None
+        if 'month_established' in data: me = memoryview(data['month_established'].encode())
+        de = None
+        if 'day_established' in data: de = data['day_established']
+        yd = None
+        if 'year_disestablished' in data: yd = data['year_disestablished']
+        md = None
+        if 'month_disestablished' in data:
+            md = memoryview(data['month_disestablished'].encode())
+        dd = None
+        if 'day_disestablished' in data: dd = data['day_disestablished']
+        cid = None
+        if 'country_id' in data: cid = data['country_id']
+        title = None
+        if 'title' in data: title = memoryview(data['title'].encode())
+        oaid = None
+        if 'old_admin_id' in data: oaid = data['old_admin_id']
+        cur.execute('''INSERT INTO admin_divisions (name, links, year_established, month_established, day_established, year_disestablished, month_disestablished, day_disestablished, country_id, title, old_admin_id) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )''', (name,links,ye,me,de,yd,md,dd,cid,title,oaid,),)
+        con.commit()
+        # print(f'Added {data["name"]} to the database')
 
-    # @classmethod
-    # def get_country_by_id(cls, data: dict):
-    #     cur.execute("SELECT * FROM countries WHERE id = ? ", data["id"], )
-    #     country_raw = cur.fetchone()
-    #     return cls(country_raw)
-
-    # @staticmethod
-    # def convertRawData(data: tuple) -> dict:
-    #     decodeType = 'utf-8'
-    #     md = None
-    #     if data[7]:
-    #         md = str(data[7],decodeType)
-    #     return {
-    #         'id': data[0],
-    #         'name': str(data[1],decodeType),
-    #         'links': str(data[2],decodeType).split(" | "),
-    #         'year_established': data[3],
-    #         'month_established': str(data[4],decodeType),
-    #         'day_established': data[5],
-    #         'year_disestablished': data[6],
-    #         'month_disestablished': md,
-    #         'day_disestablished': data[8],
-    #         'old_country_id': data[9]
-    #     }
+    @classmethod
+    def get_admin_divs_by_id(cls, data: dict):
+        cur.execute("SELECT * FROM admin_divisions WHERE id = ? ", data["id"], )
+        admin = cur.fetchone()
+        # print(f'Got = {admin}')
+        return cls(admin)
 
     @staticmethod
-    def get_admin_divs_by_name(data: str) -> list:
-        cur.execute("SELECT * FROM admin_divisions WHERE name = ? ", (memoryview(data.encode()),),)
+    def convertRawData(data: tuple) -> dict:
+        # Converts data from db to a readable hash map
+        # print(f'data converting: {data}')
+        decodeType = 'utf-8'
+        me = None
+        if data[4]: me = str(data[4],decodeType)
+        md = None
+        if data[7]: md = str(data[7],decodeType)
+        title = None
+        if data[10]: title = str(data[10],decodeType)
+        return {
+            'id': data[0],
+            'name': str(data[1],decodeType),
+            'links': str(data[2],decodeType).split(" | "),
+            'year_established': data[3],
+            'month_established': me,
+            'day_established': data[5],
+            'year_disestablished': data[6],
+            'month_disestablished': md,
+            'day_disestablished': data[8],
+            'country_id': data[9],
+            'title': title,
+            'old_admin_id': data[11]
+        }
+
+    @staticmethod
+    def get_admin_divs_by_name(data: dict) -> list:
+        cur.execute("SELECT * FROM admin_divisions WHERE name = ? ", (memoryview(data['name'].encode()),),)
         return cur.fetchall()
