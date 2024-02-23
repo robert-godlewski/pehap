@@ -90,6 +90,11 @@ class Country(Location):
         # print(f'Got = {country_raw}')
         return cls(country_raw)
 
+    @classmethod
+    def get_countries_by_name(cls, data: dict) -> list:
+        cur.execute("SELECT * FROM countries WHERE name = ? ", (memoryview(data['name'].encode()),),)
+        return cur.fetchall()
+
     @staticmethod
     def convertRawData(data: tuple) -> dict:
         # Converts data from db to a readable hash map
@@ -112,25 +117,21 @@ class Country(Location):
             'old_country_id': data[9]
         }
 
-    @staticmethod
-    def get_countries_by_name(data: dict) -> list:
-        cur.execute("SELECT * FROM countries WHERE name = ? ", (memoryview(data['name'].encode()),),)
-        return cur.fetchall()
-
 
 class AdminDivision(Location):
     # Model for Administrative Divisions
     # States, Provinces, Territories, etc are considered to be in this category
     def __init__(self, data: dict) -> None:
         super().__init__(data)
-        self.country_id = data['country_id']
+        if 'country_id' in data: self.country_id = data['country_id']
+        else: self.country_id = None
         if 'title' in data: self.title = data['title']
         else: self.title = None
         if 'old_admin_id' in data: self.old_admin_id = data['old_admin_id']
         else: self.old_admin_id = None
 
     def __str__(self) -> str:
-        if self.title: return f'The {self.title} of {self.name}'
+        if self.title is not None: return f'The {self.title} of {self.name}'
         else: return super().__str__()
 
     @classmethod
@@ -176,6 +177,19 @@ class AdminDivision(Location):
         # print(f'Got = {admin}')
         return cls(admin)
 
+    @classmethod
+    def get_admin_divs_by_name(cls, data: dict) -> list:
+        cur.execute("SELECT * FROM admin_divisions WHERE name = ? ", (memoryview(data['name'].encode()),),)
+        return cur.fetchall()
+
+    @classmethod
+    def get_admin_divs_by_country_id(cls, data: dict) -> list:
+        cur.execute("SELECT * FROM admin_divisions WHERE country_id = ? ", (data['country_id'],),)
+        # all_divs = cur.fetchall()
+        # print(f'Found: {all_divs}')
+        # return all_divs
+        return cur.fetchall()
+
     @staticmethod
     def convertRawData(data: tuple) -> dict:
         # Converts data from db to a readable hash map
@@ -201,8 +215,3 @@ class AdminDivision(Location):
             'title': title,
             'old_admin_id': data[11]
         }
-
-    @staticmethod
-    def get_admin_divs_by_name(data: dict) -> list:
-        cur.execute("SELECT * FROM admin_divisions WHERE name = ? ", (memoryview(data['name'].encode()),),)
-        return cur.fetchall()
