@@ -129,13 +129,11 @@ for region_raw in usa_regions_raw:
                 # print(row.td.div.contents)
                 if row.td.div.a.contents[0] == 'State':
                     region.title = 'State'
-                    print(f'{region.name} is a state')
                 elif row.td.div.a.contents[0] == 'Unincorporated and unorganized U.S. territory' or row.td.div.a.contents[0] == 'Unincorporated and organized U.S. territory':
                     region.title = 'Territory'
-                    print(f'{region.name} is a territory')
                 elif row.td.div.contents[2].contents[0] == 'federal district':
                     region.title = 'Federal City'
-                    print(f'{region.name} is a federal city')
+                print(f'{region.name} is a {region.title}')
             except: pass
             # try:
             #     # Skip the territories and the prior region for now
@@ -146,25 +144,17 @@ for region_raw in usa_regions_raw:
                 if row.th.a.contents[0] == 'Admitted to the Union':
                     established_date_raw = row.td.contents[0]
                     established_date = established_date_raw.split(" ")
-                    # Possible variations from this to fix:
-                    # * ... Washington: ['November', '11,', '1889', '(42nd)'] -> ok but fix established_date[1]
-                    # * ... West Virginia: ['June\xa020,', '1863'] -> the established_date[0] is weird
-                    # * ... Wyoming: ['July', '10,', '1890'] -> ok but fix established_date[1]
                     if len(established_date) < 3:
-                        # temp = established_date[0].split("xa")
-                        # established_date[0] = temp[0]
-                        # established_date.insert(1,temp[1])
-                        print(f'bug: {established_date}')
-                    if len(established_date) >=3:
-                        # This should be done right after -> Remove the if statement after fixing the prior if statement
-                        day_raw = established_date[1].split(",")
-                        established_date[1] = int(day_raw[0])
-                        year = int(established_date[2])
-                        established_date[2] = year
-                    # region.year_established = int(established_date[2])
-                    # region.month_established = established_date[0]
-                    # region.day_established = int(established_date[1])
-                    print(f'Need to add in this established date to {region.name}: {established_date}')
+                        # Needed to fix the weird unicode character on some
+                        temp_raw = established_date[0].replace('\xa0',' ')
+                        temp = temp_raw.split(" ")
+                        established_date[0] = temp[0]
+                        established_date.insert(1,temp[1])
+                    region.month_established = established_date[0]
+                    day_raw = established_date[1].split(",")
+                    region.day_established = int(day_raw[0])
+                    region.year_established = int(established_date[2])
+                    print(f'Need to add in this established date to {region.name}: {region.month_established} {region.day_established}, {region.year_established}')
             except: pass
             # Will need to copy above for Cities and Government Officials from the same table to add in later
             # print('===============')
