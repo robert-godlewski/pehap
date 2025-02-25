@@ -1,7 +1,13 @@
 Maps/
+spreadsheets/excel/
+env/
+__pycache__/
+.DS_store
 Pipfile.lock
 sql.db
+*.npy
 
 # Files not ready yet
 census_upload.py
 usac_search.py
+plotting_presidents.py

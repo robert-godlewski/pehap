@@ -1,5 +1,7 @@
 wiki = 'https://en.wikipedia.org'
 db_name = 'sql.db'
+csv_file = 'spreadsheets/csv/PresidentialElectionHistoryFINAL.csv'
+npy_temp_name = 'temp_csv_data'
 
 # Scripts
 countries_table = '''
