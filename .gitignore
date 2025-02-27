@@ -4,6 +4,7 @@ env/
 __pycache__/
 .DS_store
 Pipfile.lock
+db.sqlite3
 sql.db
 *.npy
 
@@ -11,3 +12,4 @@ sql.db
 census_upload.py
 usac_search.py
 plotting_presidents.py
+pehap.py
