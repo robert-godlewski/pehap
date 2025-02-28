@@ -52,9 +52,11 @@ def _strToInt(strnum: str) -> int:
 
 # Fix this
 def _handleData(data):
+    # We can just calculate data[6] and data[9] later
     election_year_data = {
         'year': data[0],
-        'total_population': ...
+        'total_population': _strToInt(data[5]),
+        'total_electoral': data[8],
     }
     political_party_data = {
         'party': data[1]
@@ -69,7 +71,13 @@ def _handleData(data):
         # Vice President
         {'name': data[3]}
     ]
-    candidates_to_elections_data = {}
+    candidates_to_elections_data = {
+        'popular_vote': _strToInt(data[4]),
+        'electoral_vote': data[7],
+        'notes': data[10],
+        'won': data[11],
+    }
+    # Add in sql and more data later
     candidates_to_party_data = {}
 
 try:
@@ -83,6 +91,7 @@ try:
     num = _strToInt(raw_data[0][4])
     print(f'{num}: {type(num)}')
     # numpy.save(npy_temp_name,data)
+    # Need to use the _handleData function here
     print('Saved new data.')
 except:
     print('There is no data to mine with the necessary information!')
