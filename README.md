@@ -4,7 +4,8 @@ This project is a Political Election History Analysis Project which analyzes the
 Initially just doing a scrape of USA Presidents from 1788 to 2024 elections
 
 # Developer Notes
-upload_csv.py is for uploading the data from a csv file to a SQLite database.
+After activating the virtual env run this code:
+(env) ... % python3 pehap.py
 
 # References
 * https://beautiful-soup-4.readthedocs.io/en/latest/

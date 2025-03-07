@@ -26,7 +26,7 @@ class DB:
         if not db_ok:
             print('Something is wrong with making one of the tables!')
         self.con.commit()
-    
+
     def deactivate(self):
         # Saves and closes the db session
         self.con.commit()

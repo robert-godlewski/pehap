@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS office_position (
 candidates_script = """
 CREATE TABLE IF NOT EXISTS candidates (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
+    name TEXT UNIQUE
 );
 """
 
