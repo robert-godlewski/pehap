@@ -1,3 +1,4 @@
+# REMOVE THIS FILE AND MIGRATE TO OTHERS!
 import sqlite3
 
 from db_scripts import *
@@ -49,16 +50,6 @@ class DB:
         return {
             'id': raw[0],
             'position': raw[1]
-        }
-
-    def createOrGetElectionYear(self, in_data: dict) -> dict:
-        self.cur.execute("INSERT OR IGNORE INTO election_year (year, total_population, total_electoral) VALUES ( ?, ?, ? )", (in_data['year'], in_data['total_population'],in_data['total_electoral'],))
-        self.cur.execute("SELECT * FROM election_year WHERE year = ? ", (in_data['year'],))
-        data = self.cur.fetchone()
-        return {
-            'id': data[0],
-            'total_population': data[1],
-            'total_electoral': data[2]
         }
 
     def createOrGetParty(self, in_data: dict) -> dict:
