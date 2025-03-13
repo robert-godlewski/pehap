@@ -2,14 +2,14 @@ import pandas as pd # type: ignore
 
 from dbconnection import connectToDB
 from functions import handleData
-from models import ElectionYear, political_party_script, office_position_script, candidates_script, candidates_to_elections_script, candidates_to_party_script, candidates_to_office_script # Fix this to only have Classes
+from models import ElectionYear, PoliticalParty, OfficePosition, candidates_script, candidates_to_elections_script, candidates_to_party_script, candidates_to_office_script # Fix this to only have Classes
 
 
 def createDBtables(db_name: str) -> None:
     tables_scripts = [
         {'table_name': 'election_year', 'script': ElectionYear.table_script},
-        {'table_name': 'political_party', 'script': political_party_script},
-        {'table_name': 'office_position', 'script': office_position_script},
+        {'table_name': 'political_party', 'script': PoliticalParty.table_script},
+        {'table_name': 'office_position', 'script': OfficePosition.table_script},
         {'table_name': 'candidates', 'script': candidates_script},
         {'table_name': 'candidates_to_elections', 'script': candidates_to_elections_script},
         {'table_name': 'candidates_to_party', 'script': candidates_to_party_script},

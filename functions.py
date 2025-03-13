@@ -1,5 +1,5 @@
 # Contains some helper functions to use to help convert data
-from models import ElectionYear
+from models import ElectionYear, PoliticalParty, OfficePosition
 
 
 def strToIntComplex(strnum: str) -> int:
@@ -16,8 +16,16 @@ def strToIntComplex(strnum: str) -> int:
         multi += 1000
     return num
 
+def officeData(db_name: str, position: str) -> list:
+    # This is to get [president_position, vice_president_position] data to use to handle the data
+    handler = OfficePosition(db_name)
+    handler.createOffice({'position': position})
+    return handler.getOfficeByPosition({'position': position})
+
 def handleData(db_name: str, raw_data: list) -> None:
     # Helper function to go through the raw_data and save it to a sql db via db_name
+    president_position_data = officeData(db_name, 'President')
+    vp_position_data = officeData(db_name, 'Vice President')
     # This is the initial data that we need to properly save the data to the db
     election_year = raw_data[0]
     party = raw_data[1]
@@ -31,12 +39,16 @@ def handleData(db_name: str, raw_data: list) -> None:
     # We don't need to save raw_data[9] because we can just calculate this later
     notes = raw_data[10]
     won = raw_data[11]
-    ElectionYear.createEY({
+    ey_handler = ElectionYear(db_name)
+    ey_handler.createEY({
         'year': election_year,
         'total_population': total_population,
         'total_electoral': total_electoral
     })
-    year_data = ElectionYear.getEYbyYear({'year': election_year})
+    year_data = ey_handler.getEYbyYear({'year': election_year})
+    pp_handler = PoliticalParty(db_name)
+    pp_handler.createParty({'party': party})
+    party_data = pp_handler.getPartyByName({'party': party})
     # add in the different classes to convert the information above into this...
 
 # Old information to add into handleData()
@@ -47,7 +59,6 @@ def handleData(db_name: str, raw_data: list) -> None:
 #         working_db.createOrGetOfficePosition('Vice President')
 #     ]
 #     data = [... for i in raw_data]
-#     party_data = working_db.createOrGetParty(data)
 #     president_data = working_db.createOrGetCandidate(data,'president_name')
 #     working_db.createCandidateElection(data, year_data, president_data)
 #     working_db.createCandidateParty(candidate_id=president_data['id'], party_id=party_data['id'])

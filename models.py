@@ -12,12 +12,12 @@ class ElectionYear:
     );
     """
 
-    def __init__(self, db_name: str, year: int, total_population: int, total_electoral: int) -> None:
+    def __init__(self, db_name: str, id: int=-1, year: int=-1, total_population: int=-1, total_electoral: int=-1) -> None:
         self.db_name = db_name
+        self.id = id
         self.year = year
         self.total_population = total_population
         self.total_electoral = total_electoral
-        self.id = -1
 
     @classmethod
     def createEY(cls, data: dict):
@@ -33,22 +33,61 @@ class ElectionYear:
         return cls(results[0])
 
 
+class PoliticalParty:
+    table_script = """
+    CREATE TABLE IF NOT EXISTS political_party (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        party TEXT UNIQUE
+    );
+    """
+
+    def __init__(self, db_name: str, id: int=-1, party: str='') -> None:
+        self.db_name = db_name
+        self.id = id
+        self.party = party
+
+    @classmethod
+    def createParty(cls, data: dict):
+        # query = "INSERT OR IGNORE INTO political_party (party) VALUES ( ? )"
+        query = "INSERT OR IGNORE INTO political_party (party) VALUES ( %(party)s )"
+        return connectToDB(cls.db_name).query_db(query, data)
+
+    @classmethod
+    def getPartyByName(cls, data: dict):
+        # query = "SELECT * FROM political_party WHERE party = ? "
+        query = "SELECT * FROM political_party WHERE party = %(party)s;"
+        results = connectToDB(cls.db_name).query_db(query, data)
+        return cls(results[0])
+
+
+class OfficePosition:
+    table_script = """
+    CREATE TABLE IF NOT EXISTS office_position (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        position TEXT UNIQUE
+    );
+    """
+
+    def __init__(self, db_name: str, id: int=-1, position: str='') -> None:
+        self.db_name = db_name
+        self.id = id
+        self.position = position
+
+    @classmethod
+    def createOffice(cls, data: dict):
+        # query = "INSERT OR IGNORE INTO office_position (position) VALUE ( ? )"
+        query = "INSERT OR IGNORE INTO office_position (position) VALUE ( %(position)s )"
+        return connectToDB(cls.db_name).query_db(query, data)
+
+    @classmethod
+    def getOfficeByPosition(cls, data: dict):
+        # query = "SELECT * FROM office_position WHERE position = ? "
+        query = "SELECT * FROM office_position WHERE position = %(position)s;"
+        results = connectToDB(cls.db_name).query_db(query, data)
+        return cls(results[0])
+
 # FIX BELOW
 # All were from db_scripts.py
-political_party_script = """
-CREATE TABLE IF NOT EXISTS political_party (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    party TEXT UNIQUE
-);
-"""
-
-office_position_script = """
-CREATE TABLE IF NOT EXISTS office_position (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    position TEXT UNIQUE
-);
-"""
-
 candidates_script = """
 CREATE TABLE IF NOT EXISTS candidates (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

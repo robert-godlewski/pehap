@@ -43,24 +43,6 @@ class DB:
             print(f'Failed to create and load {self.tables_scripts[table]['table_name']}.')
             return False
 
-    def createOrGetOfficePosition(self, position: str) -> dict:
-        self.cur.execute("INSERT OR IGNORE INTO office_position (position) VALUE ( ? )", (position,))
-        self.cur.execute("SELECT * FROM office_position WHERE position = ? ", (position,))
-        raw = self.cur.fetchone()
-        return {
-            'id': raw[0],
-            'position': raw[1]
-        }
-
-    def createOrGetParty(self, in_data: dict) -> dict:
-        self.cur.execute("INSERT OR IGNORE INTO political_party (party) VALUES ( ? )", (in_data['party'],))
-        self.cur.execute("SELECT * FROM political_party WHERE party = ? ", (in_data['party'],))
-        data = self.cur.fetchone()
-        return {
-            'id': data[0],
-            'party': data[1]
-        }
-
     def createOrGetCandidate(self, in_data: dict, key: str) -> dict:
         self.cur.execute("INSERT OR IGNORE INTO cadidates (name) VALUES ( ? )", (in_data[key],))
         self.cur.execute("SELECT * FROM cadidates WHERE name = ? ", (in_data[key],))
