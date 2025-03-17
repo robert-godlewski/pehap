@@ -1,5 +1,5 @@
 # Contains some helper functions to use to help convert data
-from models import ElectionYear, PoliticalParty, OfficePosition
+from models import ElectionYear, PoliticalParty, OfficePosition, Candidates
 
 
 def strToIntComplex(strnum: str) -> int:
@@ -49,15 +49,16 @@ def handleData(db_name: str, raw_data: list) -> None:
     pp_handler = PoliticalParty(db_name)
     pp_handler.createParty({'party': party})
     party_data = pp_handler.getPartyByName({'party': party})
+    candidate_handler = Candidates(db_name)
+    candidate_handler.createCandidate({'name': president_name})
+    president_data = candidate_handler.getCandidateByName({'name': president_name})
+    candidate_handler.createCandidate({'name': vice_president_name})
+    vp_data = candidate_handler.getCandidateByName({'name': vice_president_name})
     # add in the different classes to convert the information above into this...
 
 # Old information to add into handleData()
 # from db import DB
 # def handleData(raw_data: list) -> None:
-#     office_data = [
-#         working_db.createOrGetOfficePosition('President'),
-#         working_db.createOrGetOfficePosition('Vice President')
-#     ]
 #     data = [... for i in raw_data]
 #     president_data = working_db.createOrGetCandidate(data,'president_name')
 #     working_db.createCandidateElection(data, year_data, president_data)

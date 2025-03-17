@@ -86,15 +86,35 @@ class OfficePosition:
         results = connectToDB(cls.db_name).query_db(query, data)
         return cls(results[0])
 
+
+class Candidates:
+    table_script = """
+    CREATE TABLE IF NOT EXISTS candidates (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT UNIQUE
+    );
+    """
+
+    def __init__(self, db_name: str, id: int=-1, name: str ='') -> None:
+        self.db_name = db_name
+        self.id = id
+        self.name = name
+
+    @classmethod
+    def createCandidate(cls, data: dict):
+        # query = "INSERT OR IGNORE INTO cadidates (name) VALUES ( ? )"
+        query = "INSERT OR IGNORE INTO cadidates (name) VALUES ( %(name)s )"
+        return connectToDB(cls.db_name).query_db(query, data)
+
+    @classmethod
+    def getCandidateByName(cls, data: dict):
+        # query = "SELECT * FROM cadidates WHERE name = ? "
+        query = "SELECT * FROM cadidates WHERE name = %(name)s;"
+        results = connectToDB(cls.db_name).query_db(query, data)
+        return cls(results[0])
+
 # FIX BELOW
 # All were from db_scripts.py
-candidates_script = """
-CREATE TABLE IF NOT EXISTS candidates (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT UNIQUE
-);
-"""
-
 candidates_to_elections_script = """
 CREATE TABLE IF NOT EXISTS candidates_to_elections (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

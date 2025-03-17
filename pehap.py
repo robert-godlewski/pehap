@@ -2,7 +2,7 @@ import pandas as pd # type: ignore
 
 from dbconnection import connectToDB
 from functions import handleData
-from models import ElectionYear, PoliticalParty, OfficePosition, candidates_script, candidates_to_elections_script, candidates_to_party_script, candidates_to_office_script # Fix this to only have Classes
+from models import ElectionYear, PoliticalParty, OfficePosition, Candidates, candidates_to_elections_script, candidates_to_party_script, candidates_to_office_script # Fix this to only have Classes
 
 
 def createDBtables(db_name: str) -> None:
@@ -10,7 +10,7 @@ def createDBtables(db_name: str) -> None:
         {'table_name': 'election_year', 'script': ElectionYear.table_script},
         {'table_name': 'political_party', 'script': PoliticalParty.table_script},
         {'table_name': 'office_position', 'script': OfficePosition.table_script},
-        {'table_name': 'candidates', 'script': candidates_script},
+        {'table_name': 'candidates', 'script': Candidates.table_script},
         {'table_name': 'candidates_to_elections', 'script': candidates_to_elections_script},
         {'table_name': 'candidates_to_party', 'script': candidates_to_party_script},
         {'table_name': 'candidates_to_office', 'script': candidates_to_office_script},
