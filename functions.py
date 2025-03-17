@@ -1,5 +1,5 @@
 # Contains some helper functions to use to help convert data
-from models import ElectionYear, PoliticalParty, OfficePosition, Candidates
+from models import ElectionYear, PoliticalParty, OfficePosition, Candidates, CandidatesToElections, CandidatesToParty, CandidatesToOffice
 
 
 def strToIntComplex(strnum: str) -> int:
@@ -54,18 +54,33 @@ def handleData(db_name: str, raw_data: list) -> None:
     president_data = candidate_handler.getCandidateByName({'name': president_name})
     candidate_handler.createCandidate({'name': vice_president_name})
     vp_data = candidate_handler.getCandidateByName({'name': vice_president_name})
-    # add in the different classes to convert the information above into this...
-
-# Old information to add into handleData()
-# from db import DB
-# def handleData(raw_data: list) -> None:
-#     data = [... for i in raw_data]
-#     president_data = working_db.createOrGetCandidate(data,'president_name')
-#     working_db.createCandidateElection(data, year_data, president_data)
-#     working_db.createCandidateParty(candidate_id=president_data['id'], party_id=party_data['id'])
-#     working_db.createCandidateOffice(candidate_id=president_data['id'], office_id=office_data[0]['id'])
-#     vice_president_data = working_db.createOrGetCandidate(data,'vice_president_name')
-#     working_db.createCandidateElection(data, year_data, vice_president_data)
-#     working_db.createCandidateParty(candidate_id=vice_president_data['id'], party_id=party_data['id'])
-#     working_db.createCandidateOffice(candidate_id=vice_president_data['id'], office_id=office_data[1]['id'])
-# working_db.deactivate()
+    cToE_base = {
+        'popular_vote': popular_vote,
+        'electoral_vote': electoral_vote,
+        'notes': notes,
+        'won': won,
+        'election_id': year_data['id'],
+        'candidate_id': president_data['id']
+    }
+    cToE_handler = CandidatesToElections(db_name)
+    cToE_handler.createCandidateToElection(cToE_base)
+    cToE_base['candidate_id'] = vp_data['id']
+    cToE_handler.createCandidateToElection(cToE_base)
+    cToP_handler = CandidatesToParty(db_name)
+    cToP_handler.createCandidateToParty({
+        'candidate_id': president_data['id'],
+        'party_id': party_data['id']
+    })
+    cToP_handler.createCandidateToParty({
+        'candidate_id': vp_data['id'],
+        'party_id': party_data['id']
+    })
+    cToOff_handler = CandidatesToOffice(db_name)
+    cToOff_handler.createCandidateToOffice({
+        'candidate_id': president_data['id'],
+        'office_id': president_position_data['id']
+    })
+    cToOff_handler.createCandidateToOffice({
+        'candidate_id': vp_data['id'],
+        'office_id': vp_position_data['id']
+    })

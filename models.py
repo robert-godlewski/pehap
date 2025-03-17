@@ -113,32 +113,91 @@ class Candidates:
         results = connectToDB(cls.db_name).query_db(query, data)
         return cls(results[0])
 
-# FIX BELOW
-# All were from db_scripts.py
-candidates_to_elections_script = """
-CREATE TABLE IF NOT EXISTS candidates_to_elections (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    popular_vote INTEGER NOT NULL,
-    electoral_vote INTEGER NOT NULL,
-    notes TEXT,
-    won TEXT DEFAULT FALSE,
-    election_id REFERENCES election_year (id) ON DELETE CASCADE,
-    candidate_id REFERENCES candidates (id) ON DELETE CASCADE
-);
-"""
 
-candidates_to_party_script = """
-CREATE TABLE IF NOT EXISTS candidates_to_party (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    candidate_id REFERENCES candidates (id) ON DELETE CASCADE,
-    party_id REFERENCES political_party (id) ON DELETE CASCADE
-);
-"""
+class CandidatesToElections:
+    table_script = """
+    CREATE TABLE IF NOT EXISTS candidates_to_elections (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        popular_vote INTEGER NOT NULL,
+        electoral_vote INTEGER NOT NULL,
+        notes TEXT,
+        won TEXT DEFAULT FALSE,
+        election_id REFERENCES election_year (id) ON DELETE CASCADE,
+        candidate_id REFERENCES candidates (id) ON DELETE CASCADE
+    );
+    """
 
-candidates_to_office_script = """
-CREATE TABLE IF NOT EXISTS candidates_to_office (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    candidate_id REFERENCES candidates (id) ON DELETE CASCADE,
-    office_id REFERENCES office_position (id) ON DELETE CASCADE
-);
-"""
+    def __init__(self, db_name: str, id: int=-1, popular_vote: int=0, electoral_vote: int=0, notes: str='', won: bool=False, election_id: int=-1, candidate_id: int=-1):
+        self.db_name = db_name
+        self.id = id
+        self.popular_vote = popular_vote
+        self.electoral_vote = electoral_vote
+        self.notes = notes
+        self.won = won
+        self.election_id = election_id
+        self.candidate_id = candidate_id
+
+    @classmethod
+    def createCandidateToElection(cls, data: dict):
+        # query = "INSERT OR IGNORE INTO candidates_to_elections (popular_vote, electoral_vote, notes, won, election_id, candidate_id) VALUES ( ?, ?, ?, ?, ?, ? )"
+        query = "INSERT OR IGNORE INTO candidates_to_elections (popular_vote, electoral_vote, notes, won, election_id, candidate_id) VALUES ( %(popular_vote)s, %(electoral_vote)s, %(notes)s, %(won)s, %(election_id)s, %(candidate_id)s )"
+        return connectToDB(cls.db_name).query_db(query, data)
+
+    @classmethod
+    def getCandidateElectionByCandidate(cls, data: dict): 
+        # Fix this later
+        return None
+
+
+class CandidatesToParty:
+    table_script = """
+    CREATE TABLE IF NOT EXISTS candidates_to_party (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        candidate_id REFERENCES candidates (id) ON DELETE CASCADE,
+        party_id REFERENCES political_party (id) ON DELETE CASCADE
+    );
+    """
+
+    def __init__(self, db_name: str, id: int=-1, candidate_id: int=-1, party_id: int=-1):
+        self.db_name = db_name
+        self.id = id
+        self.candidate_id = candidate_id
+        self.party_id = party_id
+
+    @classmethod
+    def createCandidateToParty(cls, data: dict):
+        # query = "INSERT OR IGNORE INTO candidates_to_party (candidate_id, party_id) VALUES ( ?, ? )"
+        query = "INSERT OR IGNORE INTO candidates_to_party (candidate_id, party_id) VALUES ( %(candidate_id)s, %(party_id)s )"
+        return connectToDB(cls.db_name).query_db(query, data)
+
+    @classmethod
+    def getCandidatePartyByCandidate(cls, data: dict):
+        # Fix this later
+        return None
+
+
+class CandidatesToOffice:
+    table_script = """
+    CREATE TABLE IF NOT EXISTS candidates_to_office (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        candidate_id REFERENCES candidates (id) ON DELETE CASCADE,
+        office_id REFERENCES office_position (id) ON DELETE CASCADE
+    );
+    """
+
+    def __init__(self, db_name: str, id: int=-1, candidate_id: int=-1, office_id: int=-1):
+        self.db_name = db_name
+        self.id = id
+        self.candidate_id = candidate_id
+        self.office_id = office_id
+
+    @classmethod
+    def createCandidateToOffice(cls, data: dict):
+        # query = "INSERT OR IGNORE INTO candidates_to_office (candidate_id, office_id) VALUES ( ?, ? )"
+        query = "INSERT OR IGNORE INTO candidates_to_office (candidate_id, office_id) VALUES ( %(candidate_id)s, %(office_id)s )"
+        return connectToDB(cls.db_name).query_db(query, data)
+
+    @classmethod
+    def getCandidateOfficeByCandidate(cls, data: dict):
+        # Fix this later
+        return None
